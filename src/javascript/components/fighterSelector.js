@@ -31,14 +31,17 @@ export async function getFighterInfo(fighterId) {
 }
 
 function renderSelectedFighters(selectedFighters) {
-  const fightersPreview = document.querySelector('.preview-container___root');
-  const [playerOne, playerTwo] = selectedFighters;
-  const firstPreview = createFighterPreview(playerOne, 'left');
-  const secondPreview = createFighterPreview(playerTwo, 'right');
-  const versusBlock = createVersusBlock(selectedFighters);
-
-  fightersPreview.innerHTML = '';
-  fightersPreview.append(firstPreview, versusBlock, secondPreview);
+  if (!selectedFighters.includes(undefined)) {
+    const healthIndicators = createHealthIndicators(...selectedFighters);
+    const fightersPreview = document.querySelector('.preview-container___root');
+    const [playerOne, playerTwo] = selectedFighters;
+    const firstPreview = createFighterPreview(playerOne, 'left');
+    const secondPreview = createFighterPreview(playerTwo, 'right');
+    const versusBlock = createVersusBlock(selectedFighters);
+  
+    fightersPreview.innerHTML = '';
+    fightersPreview.append(healthIndicators, firstPreview, versusBlock, secondPreview);
+  } 
 }
 
 function createVersusBlock(selectedFighters) {
@@ -62,6 +65,32 @@ function createVersusBlock(selectedFighters) {
 
   return container;
 }
+
+
+function createHealthIndicators(leftFighter, rightFighter) {
+  const healthIndicators = createElement({ tagName: 'div', className: 'fighter-preview___fight-status' });
+  const versusSign = createElement({ tagName: 'div', className: 'fighter-preview___versus-sign' });
+  const leftFighterIndicator = createHealthIndicator(leftFighter, 'left');
+  const rightFighterIndicator = createHealthIndicator(rightFighter, 'right');
+
+  healthIndicators.append(leftFighterIndicator, versusSign, rightFighterIndicator);
+  return healthIndicators;
+}
+
+function createHealthIndicator(fighter, position) {
+  const { name } = fighter;
+  const container = createElement({ tagName: 'div', className: 'fighter-preview___fighter-indicator' });
+  const fighterName = createElement({ tagName: 'span', className: 'fighter-preview___fighter-name' });
+  const indicator = createElement({ tagName: 'div', className: 'fighter-preview___health-indicator' });
+  const bar = createElement({ tagName: 'div', className: 'fighter-preview___health-bar', attributes: { id: `${position}-fighter-indicator` }});
+
+  fighterName.innerText = name;
+  indicator.append(bar);
+  container.append(fighterName, indicator);
+
+  return container;
+}
+
 
 function startFight(selectedFighters) {
   renderArena(selectedFighters);

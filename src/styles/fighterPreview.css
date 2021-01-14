@@ -16,3 +16,42 @@
   align-items: flex-start;
 }
 
+
+.fighter-preview___fight-status {
+  display: flex;
+  margin: 30px;
+  width: 100%;
+  justify-content: center;
+}
+
+.fighter-preview___fighter-name {
+  color: black;
+  -webkit-text-fill-color: white;
+  -webkit-text-stroke-width: 1px;
+  font-size: 26px;
+  font-family: 'Arial Black';
+  font-weight: 700;
+}
+
+.fighter-preview___fighter-indicator {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin: 0 30px;
+}
+
+.fighter-preview___health-indicator {
+  width: 100%;
+  height: 25px;
+  border: 2px solid;
+  border-radius: 5px;
+  margin: 0 10px;
+  overflow: hidden;
+}
+
+.fighter-preview___health-bar {
+  height: 100%;
+  width: 100%;
+  background-color: #ebd759;
+}

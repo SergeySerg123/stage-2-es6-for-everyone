@@ -1,6 +1,8 @@
 import { createElement } from '../helpers/domHelper';
 import { createFightersSelector } from './fighterSelector';
 
+
+
 export function createFighters(fighters) {
   const selectFighter = createFightersSelector();
   const container = createElement({ tagName: 'div', className: 'fighters___root' });

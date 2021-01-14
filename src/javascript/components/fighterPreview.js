@@ -1,6 +1,8 @@
 import { createElement } from '../helpers/domHelper';
 
 export function createFighterPreview(fighter, position) {
+  const imgElement = createFighterImage(fighter);
+  
   const positionClassName = position === 'right' ? 'fighter-preview___right' : 'fighter-preview___left';
   const fighterElement = createElement({
     tagName: 'div',
@@ -8,6 +10,7 @@ export function createFighterPreview(fighter, position) {
   });
 
   // todo: show fighter info (image, name, health, etc.)
+  fighterElement.append(imgElement);
 
   return fighterElement;
 }
