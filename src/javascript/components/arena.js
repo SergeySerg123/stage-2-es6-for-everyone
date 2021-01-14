@@ -1,5 +1,7 @@
 import { createElement } from '../helpers/domHelper';
 import { createFighterImage } from './fighterPreview';
+import { fight } from './fight';
+
 
 export function renderArena(selectedFighters) {
   const root = document.getElementById('root');
@@ -7,7 +9,11 @@ export function renderArena(selectedFighters) {
 
   root.innerHTML = '';
   root.append(arena);
+  
+  let firstFighter = selectedFighters.shift();
+  let secondFighter = selectedFighters.pop();
 
+  fight(firstFighter, secondFighter).then(w => console.log('WIN'));
   // todo:
   // - start the fight
   // - when fight is finished show winner
