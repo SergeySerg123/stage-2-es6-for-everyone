@@ -8,6 +8,11 @@
   align-items: flex-end;
 }
 
+.fighter-preview___right img {
+  transform: scaleX(-1);
+}
+
 .fighter-preview___left {
   align-items: flex-start;
 }
+
