@@ -5,7 +5,7 @@ let firstFighterState = {
   isProtected: false,
   criticalHitChance: 0,
   dodgeChance: 0,
-  CriticalHitCombinationAvaible: false,
+  CriticalHitCombinationAvaible: true,
   fighterInfo: null
 };
 
@@ -14,7 +14,7 @@ let secondFighterState = {
   isProtected: false,
   criticalHitChance: 0,
   dodgeChance: 0,
-  CriticalHitCombinationAvaible: false,
+  CriticalHitCombinationAvaible: true,
   fighterInfo: null
 };
 
@@ -25,7 +25,8 @@ export async function fight(firstFighter, secondFighter) {
 
   registerHitsPower();
   registerBlocksPower();
-  registerCriticalHitCombinations();
+  registerPlayerOneCriticalHitCombinations();
+  registerPlayerTwoCriticalHitCombinations();
 
   console.log(firstFighterState, secondFighterState);
   return new Promise((resolve) => {
@@ -68,15 +69,15 @@ function calcChance() {
 
 function registerHitsPower() {
   window.addEventListener('keydown', (event) => {
-
+  let damage = 0;
     switch(event.code){
       case controls.PlayerOneAttack:
-        const damage = getDamage(firstFighterState.fighterInfo, secondFighterState.fighterInfo);
+        damage = getDamage(firstFighterState.fighterInfo, secondFighterState.fighterInfo);
         secondFighterState.fighterInfo.health -= damage;      
         break;
 
       case controls.PlayerTwoAttack:
-        const damage = getDamage(secondFighterState.fighterInfo, firstFighterState.fighterInfo);
+        damage = getDamage(secondFighterState.fighterInfo, firstFighterState.fighterInfo);
         firstFighterState.fighterInfo.health -= damage;  
         break;
     }
@@ -127,20 +128,94 @@ function registerBlocksPower() {
   });
 }
 
-function registerCriticalHitCombinations() {
-  switch(event.code){
-    case controls.PlayerOneCriticalHitCombination:
-      const damage = getCriticalDamage(firstFighterState.fighterInfo);
-      secondFighterState.fighterInfo.health -= damage; 
-      disableCriticalHitCombination(firstFighterState);     
-      break;
+function registerPlayerOneCriticalHitCombinations() {
+  let [KeyQ, KeyW, KeyE] = controls.PlayerOneCriticalHitCombination;
 
-    case controls.PlayerTwoCriticalHitCombination:
-      const damage = getCriticalDamage(secondFighterState.fighterInfo);
+  let criticalCombination = new Set();
+  let damage = 0;
+
+  window.addEventListener('keydown', (event) => {   
+    switch (event.code) {
+      case KeyQ:
+        if (firstFighterState.CriticalHitCombinationAvaible)
+          criticalCombination.add(KeyQ);
+        break;
+      case KeyW:
+        if (firstFighterState.CriticalHitCombinationAvaible)  
+          criticalCombination.add(KeyW);
+        break;
+      case KeyE:
+        if (firstFighterState.CriticalHitCombinationAvaible)
+          criticalCombination.add(KeyE);
+        break;
+    }
+    
+    if (criticalCombination.size === controls.PlayerOneCriticalHitCombination.length) {
+      damage = getCriticalDamage(firstFighterState.fighterInfo);
+      secondFighterState.fighterInfo.health -= damage; 
+      disableCriticalHitCombination(firstFighterState);
+      criticalCombination.clear();
+    } 
+  });
+
+  window.addEventListener('keyup', (event) => {
+    switch (event.code) {
+      case KeyQ:
+        criticalCombination.delete(KeyQ);
+        break;
+      case KeyW:
+        criticalCombination.delete(KeyW);
+        break;
+      case KeyE:
+        criticalCombination.delete(KeyE);
+        break;
+    } 
+  });
+}
+
+function registerPlayerTwoCriticalHitCombinations() {
+  let [KeyU, KeyI, KeyO] = controls.PlayerTwoCriticalHitCombination;
+
+  let criticalCombination = new Set();
+  let damage = 0;
+
+  window.addEventListener('keydown', (event) => {   
+    switch (event.code) {
+      case KeyU:
+        if (secondFighterState.CriticalHitCombinationAvaible)
+          criticalCombination.add(KeyU);
+        break;
+      case KeyI:
+        if (secondFighterState.CriticalHitCombinationAvaible)  
+          criticalCombination.add(KeyI);
+        break;
+      case KeyO:
+        if (secondFighterState.CriticalHitCombinationAvaible)
+          criticalCombination.add(KeyO);
+        break;
+    }
+    
+    if (criticalCombination.size === controls.PlayerTwoCriticalHitCombination.length) {
+      damage = getCriticalDamage(secondFighterState.fighterInfo);
       firstFighterState.fighterInfo.health -= damage; 
-      disableCriticalHitCombination(secondFighterState);  
-      break;
-  }
+      disableCriticalHitCombination(secondFighterState);
+      criticalCombination.clear();
+    } 
+  });
+
+  window.addEventListener('keyup', (event) => {
+    switch (event.code) {
+      case KeyU:
+        criticalCombination.delete(KeyU);
+        break;
+      case KeyI:
+        criticalCombination.delete(KeyI);
+        break;
+      case KeyO:
+        criticalCombination.delete(KeyO);
+        break;
+    } 
+  });
 }
 
 function disableCriticalHitCombination(fighterState) {
