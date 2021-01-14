@@ -13,6 +13,8 @@ class FighterService {
   }
 
   async getFighterDetails(id) {
+    // todo: implement this method
+    // endpoint - `details/fighter/${id}.json`;
     try {
       const endpoint = `details/fighter/${id}.json`;
 
@@ -21,9 +23,7 @@ class FighterService {
       return apiResult;
     } catch (error) {
       throw error;
-    }
-    // todo: implement this method
-    // endpoint - `details/fighter/${id}.json`;
+    }    
   }
 }
 
