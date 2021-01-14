@@ -23,8 +23,9 @@ export async function fight(firstFighter, secondFighter) {
   firstFighterState = {...firstFighterState, fighterInfo: firstFighter, fighterId: firstFighter._id};
   secondFighterState = {...secondFighterState, fighterInfo: secondFighter, fighterId: secondFighter._id};
 
-  registerHitPower();
-  registerBlockPower();
+  registerHitsPower();
+  registerBlocksPower();
+  registerCriticalHitCombinations();
 
   console.log(firstFighterState, secondFighterState);
   return new Promise((resolve) => {
@@ -50,6 +51,11 @@ export function getBlockPower(fighter) {
   return isBlock ? blockPower : 0;
 }
 
+function getCriticalDamage(attacker) {
+  let damage = 2 * getHitPower(attacker);
+  return damage;
+}
+
 function hasBlock(fighterId) {
   const states = [firstFighterState, secondFighterState];
   const fighterState = states.find(f => f.fighterId === fighterId);
@@ -60,29 +66,24 @@ function calcChance() {
   return Math.random() + 1;
 }
 
-function registerHitPower() {
+function registerHitsPower() {
   window.addEventListener('keydown', (event) => {
 
     switch(event.code){
       case controls.PlayerOneAttack:
-        let damage = getDamage(firstFighterState.fighterInfo, secondFighterState.fighterInfo);
-        console.log(damage);
-        secondFighterState.fighterInfo.health -= damage;
-        console.log(secondFighterState.fighterInfo.health);       
+        const damage = getDamage(firstFighterState.fighterInfo, secondFighterState.fighterInfo);
+        secondFighterState.fighterInfo.health -= damage;      
         break;
 
       case controls.PlayerTwoAttack:
-        getDamage(secondFighterState.fighterInfo, firstFighterState.fighterInfo);
-        // if (!secondFighterState.isProtected) {
-        //   secondFighterState.isProtected = true;
-        //   console.log('secondFighterState: BLOCK');
-        // }  
+        const damage = getDamage(secondFighterState.fighterInfo, firstFighterState.fighterInfo);
+        firstFighterState.fighterInfo.health -= damage;  
         break;
     }
   });
 }
 
-function registerBlockPower() {
+function registerBlocksPower() {
 
   window.addEventListener('keydown', (event) => {
 
@@ -124,4 +125,27 @@ function registerBlockPower() {
         break;
     }
   });
+}
+
+function registerCriticalHitCombinations() {
+  switch(event.code){
+    case controls.PlayerOneCriticalHitCombination:
+      const damage = getCriticalDamage(firstFighterState.fighterInfo);
+      secondFighterState.fighterInfo.health -= damage; 
+      disableCriticalHitCombination(firstFighterState);     
+      break;
+
+    case controls.PlayerTwoCriticalHitCombination:
+      const damage = getCriticalDamage(secondFighterState.fighterInfo);
+      firstFighterState.fighterInfo.health -= damage; 
+      disableCriticalHitCombination(secondFighterState);  
+      break;
+  }
+}
+
+function disableCriticalHitCombination(fighterState) {
+  fighterState.CriticalHitCombinationAvaible = false;
+  setTimeout(() => {
+    fighterState.CriticalHitCombinationAvaible = true;
+  }, 10000);
 }
