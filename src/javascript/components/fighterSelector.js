@@ -10,7 +10,6 @@ export function createFightersSelector() {
 
   return async (event, fighterId) => {
     const fighter = await getFighterInfo(fighterId);
-    console.log(selectedFighters);
     const [playerOne, playerTwo] = selectedFighters;
     const firstFighter = playerOne ?? fighter;
     const secondFighter = Boolean(playerOne) ? playerTwo ?? fighter : playerTwo;
@@ -54,6 +53,8 @@ function createVersusBlock(selectedFightersArr) {
     }
     selectedFighters = new Array();
     fighterDetailsMap.clear();
+    const fightersListElement = document.querySelector('.fighters___list');
+    fightersListElement.classList.remove('fighters___list___hidden');
   };
   const container = createElement({ tagName: 'div', className: 'preview-container___versus-block' });
   const image = createElement({
@@ -77,6 +78,9 @@ function createVersusBlock(selectedFightersArr) {
   fightBtn.innerText = 'Fight';
   cancelBtn.innerText = 'Cancel';
   container.append(image, fightBtn, cancelBtn);
+
+  const fightersListElement = document.querySelector('.fighters___list');
+  fightersListElement.classList.add('fighters___list___hidden');
 
   return container;
 }
