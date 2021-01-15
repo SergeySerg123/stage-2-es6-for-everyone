@@ -1,40 +1,23 @@
 import { controls } from '../../constants/controls';
 
-let firstFighterState = {
-  fighterId: '',
-  isProtected: false,
-  criticalHitChance: 0,
-  dodgeChance: 0,
-  fullHealthVal: 0,
-  CriticalHitCombinationAvaible: true,
-  fighterInfo: null,
-  position: 'left'
-};
-
-let secondFighterState = {
-  fighterId: '',
-  isProtected: false,
-  criticalHitChance: 0,
-  dodgeChance: 0,
-  fullHealthVal: 0,
-  CriticalHitCombinationAvaible: true,
-  fighterInfo: null,
-  position: 'right'
-};
+let firstFighterState = { };
+let secondFighterState = { };
+let isBlockedFightProcess = false;
 
 export async function fight(firstFighter, secondFighter) {
-  firstFighterState = {...firstFighterState, fighterInfo: firstFighter, fighterId: firstFighter._id, fullHealthVal: firstFighter.health};
-  secondFighterState = {...secondFighterState, fighterInfo: secondFighter, fighterId: secondFighter._id, fullHealthVal: secondFighter.health};
-
+  setInitialStates();
   registerHitsPowerListeners();
   registerBlocksPowerListeners();
   registerPlayerOneCriticalHitCombinationsListeners();
   registerPlayerTwoCriticalHitCombinationsListeners();
+  
+  firstFighterState = {...firstFighterState, fighterInfo: firstFighter, fighterId: firstFighter._id, fullHealthVal: firstFighter.health};
+  secondFighterState = {...secondFighterState, fighterInfo: secondFighter, fighterId: secondFighter._id, fullHealthVal: secondFighter.health};
 
   return new Promise((resolve) => {
     window.addEventListener('winner', (e) => {
-      console.log(e.detail);
       resolve({fighter: e.detail.winner, position : e.detail.position});
+
     });
   });
 }
@@ -75,6 +58,7 @@ function calcChance() {
 function registerHitsPowerListeners() {
   window.addEventListener('keydown', (event) => {
   let damage = 0;
+  if (isBlockedFightProcess) return;
     switch(event.code){
       case controls.PlayerOneAttack:
         damage = getDamage(firstFighterState.fighterInfo, secondFighterState.fighterInfo);
@@ -94,7 +78,7 @@ function registerHitsPowerListeners() {
 function registerBlocksPowerListeners() {
 
   window.addEventListener('keydown', (event) => {
-
+    if (isBlockedFightProcess) return;
     switch(event.code){
 
       case controls.PlayerOneBlock:
@@ -112,20 +96,18 @@ function registerBlocksPowerListeners() {
   });
 
   window.addEventListener('keyup', (event) => {
-
+    if (isBlockedFightProcess) return;
     switch(event.code){
 
       case controls.PlayerOneBlock:
         if(firstFighterState.isProtected) {
           firstFighterState.isProtected = false;
-          console.log('firstFighterState: NON-BLOCK');
         }
         break;
 
       case controls.PlayerTwoBlock:
         if(secondFighterState.isProtected) {
           secondFighterState.isProtected = false;
-          console.log('secondFighterState: NON-BLOCK');
         }
         secondFighterState.isProtected = false;
         break;
@@ -140,6 +122,7 @@ function registerPlayerOneCriticalHitCombinationsListeners() {
   let damage = 0;
 
   window.addEventListener('keydown', (event) => {   
+    if (isBlockedFightProcess) return;
     switch (event.code) {
       case KeyQ:
         if (firstFighterState.CriticalHitCombinationAvaible)
@@ -165,6 +148,7 @@ function registerPlayerOneCriticalHitCombinationsListeners() {
   });
 
   window.addEventListener('keyup', (event) => {
+    if (isBlockedFightProcess) return;
     switch (event.code) {
       case KeyQ:
         criticalCombination.delete(KeyQ);
@@ -186,6 +170,7 @@ function registerPlayerTwoCriticalHitCombinationsListeners() {
   let damage = 0;
 
   window.addEventListener('keydown', (event) => {   
+    if (isBlockedFightProcess) return;
     switch (event.code) {
       case KeyU:
         if (secondFighterState.CriticalHitCombinationAvaible)
@@ -211,6 +196,7 @@ function registerPlayerTwoCriticalHitCombinationsListeners() {
   });
 
   window.addEventListener('keyup', (event) => {
+    if (isBlockedFightProcess) return;
     switch (event.code) {
       case KeyU:
         criticalCombination.delete(KeyU);
@@ -237,6 +223,7 @@ function updateHealthBar(fighterState) {
   healthBar.style.width = result <= 0 ? '0%' : `${result}%`;
   if (result <= 0) {
     dispatchWinner(fighterState.position);
+    isBlockedFightProcess = true;
   } 
 }
 
@@ -244,7 +231,7 @@ function dispatchWinner(position) {
   const winner = position === 'left' ? secondFighterState.fighterInfo : firstFighterState.fighterInfo;
   const winnerCustomEvent = new CustomEvent('winner', { detail: {
     winner: winner,
-    position: position
+    position: position == 'left' ? 'right' : 'left'
   }} );
   window.dispatchEvent(winnerCustomEvent);
 }
@@ -254,4 +241,38 @@ function disableCriticalHitCombination(fighterState) {
   setTimeout(() => {
     fighterState.CriticalHitCombinationAvaible = true;
   }, 10000);
+}
+
+function setInitialStates() {
+  firstFighterState = {
+    fighterId: '',
+    isProtected: false,
+    criticalHitChance: 0,
+    dodgeChance: 0,
+    fullHealthVal: 0,
+    CriticalHitCombinationAvaible: true,
+    fighterInfo: null,
+    position: 'left'
+  };
+  
+  secondFighterState = {
+    fighterId: '',
+    isProtected: false,
+    criticalHitChance: 0,
+    dodgeChance: 0,
+    fullHealthVal: 0,
+    CriticalHitCombinationAvaible: true,
+    fighterInfo: null,
+    position: 'right'
+  };
+
+  isBlockedFightProcess = false;
+}
+
+function restart() {
+  fight(firstFighterState.fighterInfo, secondFighterState.fighterInfo)
+  .then(({fighter, position}) => {
+    const fighterElement = createFighter(fighter, position);
+    showWinnerModal(fighterElement);
+  });
 }
