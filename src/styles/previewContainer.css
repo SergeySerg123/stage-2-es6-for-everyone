@@ -48,3 +48,7 @@
 .preview-container___fight-btn.disabled {
   opacity: 0;
 }
+
+.preview-container___cancel-btn.disabled {
+  opacity: 0;
+}

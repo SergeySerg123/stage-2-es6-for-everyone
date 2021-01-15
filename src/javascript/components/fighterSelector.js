@@ -4,16 +4,17 @@ import versusImg from '../../../resources/versus.png';
 import { createFighterPreview } from './fighterPreview';
 import {fighterService} from '../services/fightersService';
 
+let selectedFighters = [];
+
 export function createFightersSelector() {
-  let selectedFighters = [];
 
   return async (event, fighterId) => {
     const fighter = await getFighterInfo(fighterId);
+    console.log(selectedFighters);
     const [playerOne, playerTwo] = selectedFighters;
     const firstFighter = playerOne ?? fighter;
     const secondFighter = Boolean(playerOne) ? playerTwo ?? fighter : playerTwo;
     selectedFighters = [firstFighter, secondFighter];
-
     renderSelectedFighters(selectedFighters);
   };
 }
@@ -21,7 +22,6 @@ export function createFightersSelector() {
 const fighterDetailsMap = new Map();
 
 export async function getFighterInfo(fighterId) {
-  // get fighter info from fighterDetailsMap or from service and write it to fighterDetailsMap
   let fighter = fighterDetailsMap.get(fighterId);
   if (fighter === undefined) {
     fighter = await fighterService.getFighterDetails(fighterId);
@@ -44,9 +44,17 @@ function renderSelectedFighters(selectedFighters) {
   } 
 }
 
-function createVersusBlock(selectedFighters) {
-  const canStartFight = selectedFighters.filter(Boolean).length === 2;
-  const onClick = () => startFight(selectedFighters);
+function createVersusBlock(selectedFightersArr) {
+  const canStartFight = selectedFightersArr.filter(Boolean).length === 2;
+  const onClick = () => startFight(selectedFightersArr);
+  const onCancel = () => {
+    const fightersPreview = document.querySelector('.preview-container___root');
+    while (fightersPreview.firstChild) {
+      fightersPreview.removeChild(fightersPreview.firstChild);
+    }
+    selectedFighters = new Array();
+    fighterDetailsMap.clear();
+  };
   const container = createElement({ tagName: 'div', className: 'preview-container___versus-block' });
   const image = createElement({
     tagName: 'img',
@@ -65,6 +73,7 @@ function createVersusBlock(selectedFighters) {
   });
 
   fightBtn.addEventListener('click', onClick, false);
+  cancelBtn.addEventListener('click', onCancel, false);
   fightBtn.innerText = 'Fight';
   cancelBtn.innerText = 'Cancel';
   container.append(image, fightBtn, cancelBtn);
