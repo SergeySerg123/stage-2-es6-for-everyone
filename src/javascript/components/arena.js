@@ -15,13 +15,9 @@ export function renderArena(selectedFighters) {
   let secondFighter = selectedFighters.pop();
 
   fight(firstFighter, secondFighter).then(({fighter, position}) => {
-    console.log(fighter, position);
     const fighterElement = createFighter(fighter, position);
     showWinnerModal(fighterElement);
   });
-  // todo:
-  // - start the fight
-  // - when fight is finished show winner
 }
 
 function createArena(selectedFighters) {
