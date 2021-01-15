@@ -32,6 +32,19 @@
   box-shadow: 6px 6px 7px 0px rgba(0, 0, 0, 0.75);
 }
 
+.preview-container___cancel-btn {
+  padding: 8px 35px;
+  justify-self: right;
+  text-align: center;
+  background: #034cba;
+  margin: 5px 0;
+  color: #f8f9f4;
+  font-size: 22px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 6px 6px 7px 0px rgba(0, 0, 0, 0.75);
+}
+
 .preview-container___fight-btn.disabled {
   opacity: 0;
 }

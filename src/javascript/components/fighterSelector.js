@@ -59,9 +59,15 @@ function createVersusBlock(selectedFighters) {
     className: `preview-container___fight-btn ${disabledBtn}`,
   });
 
+  const cancelBtn = createElement({
+    tagName: 'button',
+    className: `preview-container___cancel-btn ${disabledBtn}`,
+  });
+
   fightBtn.addEventListener('click', onClick, false);
   fightBtn.innerText = 'Fight';
-  container.append(image, fightBtn);
+  cancelBtn.innerText = 'Cancel';
+  container.append(image, fightBtn, cancelBtn);
 
   return container;
 }
