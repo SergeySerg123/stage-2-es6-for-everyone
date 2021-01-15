@@ -22,7 +22,6 @@ let secondFighterState = {
   position: 'right'
 };
 
-
 export async function fight(firstFighter, secondFighter) {
   firstFighterState = {...firstFighterState, fighterInfo: firstFighter, fighterId: firstFighter._id, fullHealthVal: firstFighter.health};
   secondFighterState = {...secondFighterState, fighterInfo: secondFighter, fighterId: secondFighter._id, fullHealthVal: secondFighter.health};
@@ -33,7 +32,10 @@ export async function fight(firstFighter, secondFighter) {
   registerPlayerTwoCriticalHitCombinationsListeners();
 
   return new Promise((resolve) => {
-    // resolve the promise with the winner when fight is over
+    window.addEventListener('winner', (e) => {
+      console.log(e.detail);
+      resolve({fighter: e.detail.winner, position : e.detail.position});
+    });
   });
 }
 
@@ -233,6 +235,18 @@ function updateHealthBar(fighterState) {
   let result = (100 * restHealth) / fullHealthVal;
 
   healthBar.style.width = result <= 0 ? '0%' : `${result}%`;
+  if (result <= 0) {
+    dispatchWinner(fighterState.position);
+  } 
+}
+
+function dispatchWinner(position) {
+  const winner = position === 'left' ? secondFighterState.fighterInfo : firstFighterState.fighterInfo;
+  const winnerCustomEvent = new CustomEvent('winner', { detail: {
+    winner: winner,
+    position: position
+  }} );
+  window.dispatchEvent(winnerCustomEvent);
 }
 
 function disableCriticalHitCombination(fighterState) {
