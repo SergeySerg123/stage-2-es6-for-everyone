@@ -13,14 +13,13 @@ export async function fight(firstFighter, secondFighter) {
   
   firstFighterState = {...firstFighterState, fighterInfo: firstFighter, fighterId: firstFighter._id, fullHealthVal: firstFighter.health};
   secondFighterState = {...secondFighterState, fighterInfo: secondFighter, fighterId: secondFighter._id, fullHealthVal: secondFighter.health};
-
   return new Promise((resolve) => {
     window.addEventListener('winner', (e) => {
       resolve({fighter: e.detail.winner, position : e.detail.position});
-
     });
   });
 }
+
 
 export function getDamage(attacker, defender) {
   let damage = getHitPower(attacker) - getBlockPower(defender);
@@ -61,15 +60,19 @@ function registerHitsPowerListeners() {
   if (isBlockedFightProcess) return;
     switch(event.code){
       case controls.PlayerOneAttack:
-        damage = getDamage(firstFighterState.fighterInfo, secondFighterState.fighterInfo);
-        secondFighterState.fighterInfo.health -= damage;  
-        updateHealthBar(secondFighterState);    
+        if (!firstFighterState.isProtected) {
+          damage = getDamage(firstFighterState.fighterInfo, secondFighterState.fighterInfo);
+          secondFighterState.fighterInfo.health -= damage;  
+          updateHealthBar(secondFighterState);  
+        } 
         break;
 
       case controls.PlayerTwoAttack:
-        damage = getDamage(secondFighterState.fighterInfo, firstFighterState.fighterInfo);
-        firstFighterState.fighterInfo.health -= damage;
-        updateHealthBar(firstFighterState);  
+        if (!secondFighterState.isProtected) {
+          damage = getDamage(secondFighterState.fighterInfo, firstFighterState.fighterInfo);
+          firstFighterState.fighterInfo.health -= damage;
+          updateHealthBar(firstFighterState);
+        } 
         break;
     }
   });

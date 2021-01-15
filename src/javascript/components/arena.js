@@ -3,7 +3,6 @@ import { createFighterImage } from './fighterPreview';
 import { fight } from './fight';
 import { showWinnerModal } from './modal/winner';
 
-
 export function renderArena(selectedFighters) {
   const root = document.getElementById('root');
   const arena = createArena(selectedFighters);
@@ -11,8 +10,7 @@ export function renderArena(selectedFighters) {
   root.innerHTML = '';
   root.append(arena);
   
-  let firstFighter = selectedFighters.shift();
-  let secondFighter = selectedFighters.pop();
+  let [firstFighter, secondFighter] = selectedFighters;
 
   fight(firstFighter, secondFighter).then(({fighter, position}) => {
     const fighterElement = createFighter(fighter, position);
@@ -24,7 +22,7 @@ function createArena(selectedFighters) {
   const arena = createElement({ tagName: 'div', className: 'arena___root' });
   const healthIndicators = createHealthIndicators(...selectedFighters);
   const fighters = createFighters(...selectedFighters);
-  
+
   arena.append(healthIndicators, fighters);
   return arena;
 }

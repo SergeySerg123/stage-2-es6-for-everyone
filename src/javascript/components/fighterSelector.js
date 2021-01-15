@@ -110,7 +110,6 @@ function createHealthIndicator(fighter, position) {
   return container;
 }
 
-
 function startFight(selectedFighters) {
   renderArena(selectedFighters);
 }
