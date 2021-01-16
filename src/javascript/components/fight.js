@@ -2,7 +2,6 @@ import { controls } from '../../constants/controls';
 
 let firstFighterState = { };
 let secondFighterState = { };
-let isBlockedFightProcess = false;
 
 export async function fight(firstFighter, secondFighter) {
   setInitialStates();
@@ -63,7 +62,6 @@ function calcChance() {
 function registerHitsPowerListeners() {
   window.addEventListener('keydown', (event) => {
   let damage = 0;
-  if (isBlockedFightProcess) return;
     switch(event.code){
       case controls.PlayerOneAttack:
         if (!firstFighterState.isProtected) {
@@ -88,7 +86,6 @@ function registerHitsPowerListeners() {
 function registerBlocksPowerListeners() {
 
   window.addEventListener('keydown', (event) => {
-    if (isBlockedFightProcess) return;
     switch(event.code){
 
       case controls.PlayerOneBlock:
@@ -106,7 +103,6 @@ function registerBlocksPowerListeners() {
   });
 
   window.addEventListener('keyup', (event) => {
-    if (isBlockedFightProcess) return;
     switch(event.code){
 
       case controls.PlayerOneBlock:
@@ -132,7 +128,6 @@ function registerPlayerOneCriticalHitCombinationsListeners() {
   let damage = 0;
 
   window.addEventListener('keydown', (event) => {   
-    if (isBlockedFightProcess) return;
     switch (event.code) {
       case KeyQ:
         if (firstFighterState.CriticalHitCombinationAvaible)
@@ -158,7 +153,6 @@ function registerPlayerOneCriticalHitCombinationsListeners() {
   });
 
   window.addEventListener('keyup', (event) => {
-    if (isBlockedFightProcess) return;
     switch (event.code) {
       case KeyQ:
         criticalCombination.delete(KeyQ);
@@ -180,7 +174,6 @@ function registerPlayerTwoCriticalHitCombinationsListeners() {
   let damage = 0;
 
   window.addEventListener('keydown', (event) => {   
-    if (isBlockedFightProcess) return;
     switch (event.code) {
       case KeyU:
         if (secondFighterState.CriticalHitCombinationAvaible)
@@ -206,7 +199,6 @@ function registerPlayerTwoCriticalHitCombinationsListeners() {
   });
 
   window.addEventListener('keyup', (event) => {
-    if (isBlockedFightProcess) return;
     switch (event.code) {
       case KeyU:
         criticalCombination.delete(KeyU);
@@ -233,7 +225,6 @@ function updateHealthBar(fighterState) {
   healthBar.style.width = result <= 0 ? '0%' : `${result}%`;
   if (result <= 0) {
     dispatchWinner(fighterState.position);
-    isBlockedFightProcess = true;
   } 
 }
 
@@ -275,8 +266,6 @@ function setInitialStates() {
     fighterInfo: null,
     position: 'right'
   };
-
-  isBlockedFightProcess = false;
 }
 
 function restart() {
