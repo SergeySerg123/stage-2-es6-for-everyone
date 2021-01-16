@@ -22,7 +22,14 @@ export async function fight(firstFighter, secondFighter) {
 
 
 export function getDamage(attacker, defender) {
-  let damage = getHitPower(attacker) - getBlockPower(defender);
+  let hitPower = getHitPower(attacker);
+  let blockPower = getBlockPower(defender);
+  let damage = 0;
+  if (hasBlock(defender._id)) {
+    damage = hitPower - blockPower;
+  } else {
+    damage = hitPower;
+  }
   return damage < 0 ? 0 : damage;
 }
 
@@ -33,10 +40,9 @@ export function getHitPower(fighter) {
 }
 
 export function getBlockPower(fighter) {
-  const isBlock = hasBlock(fighter._id);
   let dodgeChance = calcChance();
   let blockPower = fighter.defense * dodgeChance;
-  return isBlock ? blockPower : 0;
+  return blockPower;
 }
 
 function getCriticalDamage(attacker) {
@@ -62,6 +68,7 @@ function registerHitsPowerListeners() {
       case controls.PlayerOneAttack:
         if (!firstFighterState.isProtected) {
           damage = getDamage(firstFighterState.fighterInfo, secondFighterState.fighterInfo);
+ 
           secondFighterState.fighterInfo.health -= damage;  
           updateHealthBar(secondFighterState);  
         } 
